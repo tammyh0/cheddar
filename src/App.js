@@ -1,11 +1,35 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import './App.css'
-import './namePicker.js'
 import NamePicker from './namePicker.js'
+import {db, useDB} from './db'
+import { BrowserRouter, Route} from 'react-router-dom'
+import * as firebase from "firebase/app"
+import "firebase/firestore"
+import "firebase"
 
 function App() {
-  const [messages, setMessages] = useState([])
+  useEffect(()=>{ 
+    const {pathname} = window.location
+    if (pathname.length<2) window.location.pathname='home' // if you don't have a slash, then it redirects you to /home
+  }, []) // every time you do useEffect, you MUST put the , [] or else it will exceed itself and will reload over and over again
+    return <BrowserRouter>
+      <Route path="/:room" component={Room}/> 
+    </BrowserRouter>
+}
+
+function Room(props) {
+  // const [messages, setMessages] = useState([])
+  const {room} = props.match.params
   const [name, setName] = useState('')
+  const messages = useDB(room)
+
+  // useEffect(()=>{
+  //  db.listen({ // we're gonna listen everytime the database changes aka when a new message is added
+  //    receive: m=> { 
+  //      setMessages(current=> [m, ...current]) // gives us the current state of messages and add the new message to the current messages array
+  //    },
+  //  })
+  //}, [])
 
   // console.log(messages)
   return <main>
@@ -24,9 +48,13 @@ function App() {
 
   <div className="messages"> 
     {messages.map((m,i)=>{  // Map function takes in two arguments: the map item and the index
-      return <div key={i} className="message-wrap">
-          <div className="message">{m}</div>
+      return <div key={i} className="message-wrap"
+        from={m.name===name?'me':'you'}> 
+        <div className="message">
+          <div className="msg-name">{m.name}</div>
+          <div className="msg-text">{m.text}</div>
         </div>
+      </div>
     })}
   </div>
 
@@ -36,8 +64,10 @@ function App() {
 
 
   {/* Blue curly braces = entering JS from HTML; white curly braces = block or a function body */}
-  <TextInput onSend={text=> { // Fat arrow means it's a function that's receiving a single argument on its left; it's what you passed into props.onSend below
-    setMessages([text, ...messages])
+  <TextInput onSend={(text)=> { // Fat arrow means it's a function that's receiving a single argument on its left; it's what you passed into props.onSend below
+    db.send({ // we wanna send it to the database instead of storing locally if we wanna communicate with real other ppl
+      text, name, ts: new Date(), room
+    })
   }} />
 
   </main>
@@ -46,19 +76,23 @@ function App() {
 function TextInput(props){
   const [text, setText] = useState('')
 
-  return <div className="text-input">
+  return <div className="text-input-wrap">
     <input 
-      className="msg-input"
+      className="text-input"
       value={text} 
       placeholder="  Type your cheesy message..."
       onChange={e=> setText(e.target.value)}
+      onKeyPress={e=> {
+        if(e.key==='Enter') {
+          if(text) props.onSend(text)
+          setText('')
+        }
+      }}
     />
-    <button className="send-button" onClick={()=> {
-      if(text){
-      props.onSend(text)
-      }
+    <button onClick={()=> {
+      if(text) props.onSend(text)
       setText('') // changing the text back to empty, which controls the input value
-    }} className="send-button"
+    }} className="button"
       disabled={!text}>
       Send
 

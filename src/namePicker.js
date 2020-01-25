@@ -16,16 +16,17 @@ function NamePicker(props) {
         inputEl.current.focus()
         if(name && !showName) {
             props.onSave(name)
+            localStorage.setItem('name', name) // when u get ur name (from the userEffect for the first time), ur SETTING it to be your name
         }
         setShowName(!showName)
     }
 
-    useEffect(()=>{
-        const n = localStorage.getItem('name')
+    useEffect(()=>{ // useEffect lets you store an empty variable (represented by the [] at the end) to put stuff in there and run some arbitrary code; if you put an empty array, it tells that block of code to only run the first time
+        const n = localStorage.getItem('name') // localStorage lets you save some data in your browser (when you refresh, ur stuff is still there; such as your login) 
         if(n) {
             setName(n)
             save()
-        }
+        } // let's check in localStorage for the name. if there's a name, set the username to that and save it within the current browser
     }, [])
 
     return <div className="edit-username">

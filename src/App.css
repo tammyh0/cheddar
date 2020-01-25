@@ -1,12 +1,14 @@
-*{
+* {
   box-sizing:border-box;
 }
+
 html,body{
   height:100%;
   position:fixed;
   top:0;left:0;bottom:0;right:0;
 }
-body{
+
+body {
   font-family:-apple-system,BlinkMacSystemFont,Helvetica Neue,Helvetica,Arial,sans-serif;
   height:100%;
   display:flex;
@@ -15,28 +17,34 @@ body{
   background: linear-gradient(145deg, #ff512f, #f09819);
   color:black;
 }
- header{
-   position:absolute;
-   top:0;
-   left:0;
-   width:100%;
-   height:40px;
-   color:brown;
-   padding:5px 10px 5px 10px;
-   background:rgba(255,255,255,0.5);
-   font-family:muli;
 
-   display:flex;
-   align-items:center;
-   justify-content:space-between;
+header {
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:40px;
+  color:brown;
+  padding:5px 10px 5px 10px;
+  background:rgba(255,255,255,0.5);
+  font-family:muli;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
  }
 
- header img {
+  .logo {
    height:24px;
    margin-right:10px;
  }
 
- .text-input {
+  .logo-wrap {
+    display:flex;
+    align-items:center;
+  }
+
+  .text-input-wrap {
    position:absolute;
    bottom:0;
    left:0;
@@ -45,7 +53,7 @@ body{
    border-top:1px solid white;
  }
 
-  .msg-input {
+  .text-input {
    position:absolute;
    height:25px;
    width:100%;
@@ -56,7 +64,7 @@ body{
    color:grey;
  }
 
-  .send-button {
+  .button {
    position:absolute;
    height:22px;
    top:5.5px;
@@ -66,38 +74,55 @@ body{
    background:lightgrey;
  }
 
-  .send-button:hover {
+  .button:hover {
    background:grey;
    color:lightgrey;
  }
 
-  .send-button:disabled {
+  .button:disabled {
    background:grey;
    color:lightgrey;
  }
 
-.messages {
-  height:calc(100vh - 73px);
-  position:absolute;
-  top:33px;
-  display:flex;
-  flex-direction:column-reverse;
-  overflow-y:scroll;
-  width:100vw;
-  left:0px;
-}
+  .messages {
+    height:calc(100vh - 73px);
+    position:absolute;
+    top:40px;
+    display:flex;
+    flex-direction:column-reverse;
+    overflow-y:auto;
+    width:100vw;
+    left:0px;
+  }
 
 .message-wrap {
   width:100%;
+  display:flex;
+  justify-content:flex-start;
 }
 
- .message {
+.message-wrap[from="me"] {
+  justify-content:flex-end;
+}
+
+.message {
+  position:relative;
+  margin-top:10px;
+}
+ .msg-text {
    color:grey;
    background:white;
    padding:5px;
    margin:10px;
    border-radius:15px;
    display:inline-block;
+ }
+
+ .msg-name {
+   font-size:14px;
+   position:absolute;
+   top:-8px;
+   left:5px;
  }
 
  .edit-username {
