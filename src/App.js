@@ -1,11 +1,14 @@
 import React, {useState, useEffect} from 'react'
 import './App.css'
-import NamePicker from './namePicker.js'
+import NamePicker from './namePicker'
 import {db, useDB} from './db'
 import { BrowserRouter, Route} from 'react-router-dom'
 import * as firebase from "firebase/app"
-import "firebase/firestore"
-import "firebase"
+// import "firebase/firestore"
+// import "firebase"
+import "firebase/storage"
+import {FiCamera} from "react-icons/fi"
+import Camera from 'react-snap-pic'
 
 function App() {
   useEffect(()=>{ 
@@ -21,6 +24,7 @@ function Room(props) {
   // const [messages, setMessages] = useState([])
   const {room} = props.match.params
   const [name, setName] = useState('')
+  const [showCamera, setShowCamera] = useState(false)
   const messages = useDB(room)
 
   // useEffect(()=>{
@@ -32,7 +36,21 @@ function Room(props) {
   //}, [])
 
   // console.log(messages)
+
+  async function takePicture(img) { // async means you can use await... which waits for the line of code to be done before running the next line
+    setShowCamera(false)
+    const imgID = Math.random().toString(36).substring(7)
+    var storageRef = firebase.storage().ref()
+    var ref = storageRef.child(imgID + '.jpg')
+    await ref.putString(img, 'data_url')
+    db.send({ 
+      img: imgID, name, ts: new Date(), room 
+    })
+  }
+
   return <main>
+
+  {showCamera && <Camera takePicture={takePicture} />} {/* If the camera is showing/true, then render the actual camera; the takePicture prop means to run the takePicture function */}
 
   {/* The HTML doesn't start til the word return. Everything before return is JS */}
   <header>
@@ -47,15 +65,7 @@ function Room(props) {
   </header>
 
   <div className="messages"> 
-    {messages.map((m,i)=>{  // Map function takes in two arguments: the map item and the index
-      return <div key={i} className="message-wrap"
-        from={m.name===name?'me':'you'}> 
-        <div className="message">
-          <div className="msg-name">{m.name}</div>
-          <div className="msg-text">{m.text}</div>
-        </div>
-      </div>
-    })}
+    {messages.map((m,i)=> <Message key={i} m={m} name={name} />)}  // Map function takes in two arguments: the map item and the index
   </div>
 
   {/* <button onClick={()=> alert('wtf i told u not to click it')}>
@@ -64,19 +74,44 @@ function Room(props) {
 
 
   {/* Blue curly braces = entering JS from HTML; white curly braces = block or a function body */}
-  <TextInput onSend={(text)=> { // Fat arrow means it's a function that's receiving a single argument on its left; it's what you passed into props.onSend below
-    db.send({ // we wanna send it to the database instead of storing locally if we wanna communicate with real other ppl
-      text, name, ts: new Date(), room
-    })
-  }} />
+  <TextInput 
+    showCamera={()=>setShowCamera(true)}
+    onSend={(text)=> { // Fat arrow means it's a function that's receiving a single argument on its left; it's what you passed into props.onSend below
+      db.send({ // we wanna send it to the database instead of storing locally if we wanna communicate with real other ppl
+        text, name, ts: new Date(), room
+      })
+    }} 
+  />
 
   </main>
 }
 
-function TextInput(props){
+const bucket = 'https://firebasestorage.googleapis.com/v0/b/cheddarapp2020.appspot.com/o/'
+const suffix = '.jpg?alt=media'
+
+function Message({m, name}) {
+  return <div className="message-wrap"
+  from={m.name===name?'me':'you'}
+  onClick={()=> console.log(m)}> 
+  <div className="message">
+    <div className="msg-name">{m.name}</div>
+    <div className="msg-text">
+      {m.text}
+      {m.img && <img src={bucket + m.img + suffix} alt="pic" />}
+    </div> 
+  </div>
+</div>
+}
+
+function TextInput(props){ // props is an object with a bunch of diff things/properties to it, including the showCamera prop
   const [text, setText] = useState('')
 
   return <div className="text-input-wrap">
+    <button onClick={props.showCamera}
+      className="camera-button">
+      <FiCamera style={{height:15, width:15}} />
+    </button>
+
     <input 
       className="text-input"
       value={text} 

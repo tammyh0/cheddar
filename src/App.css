@@ -53,11 +53,18 @@ header {
    border-top:1px solid white;
  }
 
+  .camera-button {
+    position:absolute;
+    top:7px;
+    left:5px;
+  }
+
   .text-input {
    position:absolute;
    height:25px;
-   width:100%;
+   width:97%;
    top:4px;
+   left:40px;
    border-radius:15px;
    border: 1px solid white;
    background:white;
