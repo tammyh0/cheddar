@@ -2,10 +2,14 @@
   box-sizing:border-box;
 }
 
-html,body{
+html,body,#root{
   height:100%;
   position:fixed;
   top:0;left:0;bottom:0;right:0;
+}
+
+html {
+  font-size:13px;
 }
 
 body {
@@ -28,6 +32,7 @@ header {
   padding:5px 10px 5px 10px;
   background:rgba(255,255,255,0.5);
   font-family:muli;
+  font-size:1.5rem;
 
   display:flex;
   align-items:center;
@@ -62,6 +67,7 @@ header {
   .text-input {
    position:absolute;
    height:25px;
+   font-size:15px;
    width:97%;
    top:4px;
    left:40px;

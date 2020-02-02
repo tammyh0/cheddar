@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react'
 import './App.css'
+import './media.css'
 import NamePicker from './namePicker'
 import {db, useDB} from './db'
 import { BrowserRouter, Route} from 'react-router-dom'
@@ -9,6 +10,7 @@ import * as firebase from "firebase/app"
 import "firebase/storage"
 import {FiCamera} from "react-icons/fi"
 import Camera from 'react-snap-pic'
+import Div100vh from 'react-div-100vh'
 
 function App() {
   useEffect(()=>{ 
@@ -48,7 +50,7 @@ function Room(props) {
     })
   }
 
-  return <main>
+  return <Div100vh>
 
   {showCamera && <Camera takePicture={takePicture} />} {/* If the camera is showing/true, then render the actual camera; the takePicture prop means to run the takePicture function */}
 
@@ -83,7 +85,7 @@ function Room(props) {
     }} 
   />
 
-  </main>
+  </Div100vh>
 }
 
 const bucket = 'https://firebasestorage.googleapis.com/v0/b/cheddarapp2020.appspot.com/o/'
